@@ -96,10 +96,21 @@ function App() {
   ? totalLatency / domains.length
   : 0
 
+  
   function handleAddDomain(domainName){
+    const trimmedName = domainName.trim()
+
+    if (trimmedName === "") {
+      return
+    }
+
+    if (domains.some(d => d.name === trimmedName)) {
+      return
+    }
+
     const newDomain = {
       id: crypto.randomUUID(),
-      name: domainName,
+      name: trimmedName,
       checks: {
         a: { status: "ok", values: [] },
         mx: { status: "ok", values: [] },
@@ -109,8 +120,11 @@ function App() {
       latency: 0,
       lastChecked: Date.now(),
     }
+   
     setDomains([...domains, newDomain])
   }
+ 
+ 
   function handleDeleteDomain(id) {
     setDomains(domains.filter(d => d.id !== id))
   }
