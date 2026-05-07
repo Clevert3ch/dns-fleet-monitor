@@ -111,6 +111,9 @@ function App() {
     }
     setDomains([...domains, newDomain])
   }
+  function handleDeleteDomain(id) {
+    setDomains(domains.filter(d => d.id !== id))
+  }
 
   
   
@@ -129,6 +132,7 @@ function App() {
     />
     <Table 
     domains={domains}
+    onDeleteDomain={handleDeleteDomain}
      />
     
     </>
