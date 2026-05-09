@@ -1,4 +1,4 @@
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import Header from "./components/Header";
 import StatCard from "./components/StatCard";
 import AddDomainBar from "./components/AddDomainBar";
@@ -19,17 +19,98 @@ function getDomainStatus(domain){
     if(statuses.includes("warning")){
       return "warning"
     }
+    if(statuses.includes("pending")) {
+      return "loading"
+    }
     return "healthy"
   }
+async function dnsQuery(domain, type) {
+  const res = await fetch(`https://dns.google/resolve?name=${domain}&type=${type}`)
+  const data = await res.json()
+  return data
+  
+}
+
+
+async function lookupA(domain) {
+   const data = await dnsQuery(domain, "A")
+   
+   if (data.Status !== 0 || !data.Answer) {
+    return {
+      status: "fail",
+      values: [],
+    }
+   }
+   return {
+    status: "ok",
+    values: data.Answer.map(a => a.data),
+   }
+}
+
+async function lookupMX(domain) {
+  const data = await dnsQuery(domain, "MX")
+
+  if (data.Status !== 0 || !data.Answer) {
+    return {
+      status: "fail",
+      values: [],
+    }
+   }
+   return {
+    status: "ok",
+    values: data.Answer.map(mx => mx.data),
+   }
+}
+
+async function lookupSPF(domain) {
+  const data = await dnsQuery(domain, "TXT")
+
+  if (data.Status !== 0 || !data.Answer) {
+    return {
+      status: "fail",
+      values: [],
+    }
+   }
+const values = data.Answer
+.map(record => record.data.replace(/^"|"$/g, ""))
+.filter(txt => txt.startsWith("v=spf"))
+
+if (values.length === 0) {
+  return {
+    status: "fail",
+    values: [],
+  }
+}
+   return {
+    status: "ok",
+    values,
+   }
+}
+
+async function lookupDNSSEC(domain) {
+  const data = await dnsQuery(domain, "A")
+
+  if(data.AD === true) {
+    return {
+      status: "ok",
+      values: ["DNSSEC validated"],
+    }
+  }
+  return {
+    status: "warning",
+    values: ["No DNSSEC"],
+  }
+
+}
+
+
 
 
 
 
 function App() {
 
-  
-  
-
+ 
   const [domains, setDomains] = useState([
     {
     id: "1",
@@ -77,6 +158,32 @@ function App() {
   }
   ])
 
+   useEffect(() => {
+    domains.forEach(domain => {
+      if(getDomainStatus(domain) !== "loading") return
+
+      const start = Date.now()
+        
+      Promise.all([
+  lookupA(domain.name),
+  lookupMX(domain.name),
+  lookupSPF(domain.name),
+  lookupDNSSEC(domain.name),
+  ]).then(([a, mx, spf, dnssec]) => {
+    const latency = Date.now() - start
+  setDomains(prev => prev.map(d => 
+    d.id === domain.id 
+      ? { ...d, checks: { a, mx, spf, dnssec },
+       latency,
+       lastChecked: Date.now()
+       }
+      : d
+  ))
+  })
+      
+    })
+  }, [domains])
+
   const domainCount = domains.length
   const lastSync = Math.max(...domains.map(d => d.lastChecked))
 
@@ -112,10 +219,10 @@ function App() {
       id: crypto.randomUUID(),
       name: trimmedName,
       checks: {
-        a: { status: "ok", values: [] },
-        mx: { status: "ok", values: [] },
-        spf: { status: "ok", values: [] },
-        dnssec: { status: "ok", values: [] },
+        a: { status: "pending", values: [] },
+        mx: { status: "pending", values: [] },
+        spf: { status: "pending", values: [] },
+        dnssec: { status: "pending", values: [] },
       },
       latency: 0,
       lastChecked: Date.now(),
