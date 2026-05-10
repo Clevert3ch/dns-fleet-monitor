@@ -158,31 +158,47 @@ function App() {
   }
   ])
 
-   useEffect(() => {
-    domains.forEach(domain => {
-      if(getDomainStatus(domain) !== "loading") return
+        useEffect(() => {
+          domains.forEach(domain => {
+            if(getDomainStatus(domain) !== "loading") return
 
-      const start = Date.now()
-        
-      Promise.all([
-        lookupA(domain.name),
-        lookupMX(domain.name),
-        lookupSPF(domain.name),
-        lookupDNSSEC(domain.name),
-        ]).then(([a, mx, spf, dnssec]) => {
-          const latency = Date.now() - start
-        setDomains(prev => prev.map(d => 
-          d.id === domain.id 
-            ? { ...d, checks: { a, mx, spf, dnssec },
-            latency,
-            lastChecked: Date.now()
-            }
-            : d
-        ))
-        })
-            
-          })
-        }, [domains])
+            const start = Date.now()
+              
+            Promise.all([
+              lookupA(domain.name),
+              lookupMX(domain.name),
+              lookupSPF(domain.name),
+              lookupDNSSEC(domain.name),
+              ]).then(([a, mx, spf, dnssec]) => {
+                const latency = Date.now() - start
+              setDomains(prev => prev.map(d => 
+                d.id === domain.id 
+                  ? { ...d, checks: { a, mx, spf, dnssec },
+                  latency,
+                  lastChecked: Date.now()
+                  }
+                  : d
+              ))
+              })
+                  
+                })
+              }, [domains])
+
+            useEffect(() => {
+              const id = setInterval(() => {
+                setDomains(prev => prev.map(d => ({
+                    ...d,
+                checks: {
+                  a:      { ...d.checks.a,      status: "pending" },
+                  mx:     { ...d.checks.mx,     status: "pending" },
+                  spf:    { ...d.checks.spf,    status: "pending" },
+                  dnssec: { ...d.checks.dnssec, status: "pending" },
+                  }
+
+                })))
+              }, 30000) 
+              return () => clearInterval(id) 
+            }, [])
 
   const domainCount = domains.length
   const lastSync = Math.max(...domains.map(d => d.lastChecked))
@@ -259,7 +275,7 @@ function App() {
     <StatCard label="Healthy" value={healthyCount} />
     <StatCard label="Warnings" value={warningCount} />
     <StatCard label="Failing" value={failingCount} />
-    <StatCard label="Avg latency" value={avgLatency} />
+    <StatCard label="Avg latency" value={`${Math.round(avgLatency)}ms`} />
     <AddDomainBar
     onAddDomain={handleAddDomain}
     onRefreshAll={handleRefreshAll}
