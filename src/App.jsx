@@ -165,24 +165,24 @@ function App() {
       const start = Date.now()
         
       Promise.all([
-  lookupA(domain.name),
-  lookupMX(domain.name),
-  lookupSPF(domain.name),
-  lookupDNSSEC(domain.name),
-  ]).then(([a, mx, spf, dnssec]) => {
-    const latency = Date.now() - start
-  setDomains(prev => prev.map(d => 
-    d.id === domain.id 
-      ? { ...d, checks: { a, mx, spf, dnssec },
-       latency,
-       lastChecked: Date.now()
-       }
-      : d
-  ))
-  })
-      
-    })
-  }, [domains])
+        lookupA(domain.name),
+        lookupMX(domain.name),
+        lookupSPF(domain.name),
+        lookupDNSSEC(domain.name),
+        ]).then(([a, mx, spf, dnssec]) => {
+          const latency = Date.now() - start
+        setDomains(prev => prev.map(d => 
+          d.id === domain.id 
+            ? { ...d, checks: { a, mx, spf, dnssec },
+            latency,
+            lastChecked: Date.now()
+            }
+            : d
+        ))
+        })
+            
+          })
+        }, [domains])
 
   const domainCount = domains.length
   const lastSync = Math.max(...domains.map(d => d.lastChecked))
@@ -236,6 +236,18 @@ function App() {
     setDomains(domains.filter(d => d.id !== id))
   }
 
+  function handleRefreshAll(){
+    setDomains(prev => prev.map(d => ({
+        ...d,
+    checks: {
+      a:      { ...d.checks.a,      status: "pending" },
+      mx:     { ...d.checks.mx,     status: "pending" },
+      spf:    { ...d.checks.spf,    status: "pending" },
+      dnssec: { ...d.checks.dnssec, status: "pending" },
+    }
+    })))
+  }
+
   
   
   return (
@@ -250,6 +262,7 @@ function App() {
     <StatCard label="Avg latency" value={avgLatency} />
     <AddDomainBar
     onAddDomain={handleAddDomain}
+    onRefreshAll={handleRefreshAll}
     />
     <Table 
     domains={domains}

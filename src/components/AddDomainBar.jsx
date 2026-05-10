@@ -1,7 +1,7 @@
 import {useState} from "react"
 
 
-export default function AddDomainBar({onAddDomain}) {
+export default function AddDomainBar({onAddDomain, onRefreshAll}) {
     const [text, setText] = useState("")
 
     return (
@@ -12,6 +12,10 @@ export default function AddDomainBar({onAddDomain}) {
     />
     <button onClick={() => onAddDomain(text)}>
         Add
+        </button>
+    
+    <button onClick={() => onRefreshAll()}>
+        Refresh
         </button>
     </>
    )
