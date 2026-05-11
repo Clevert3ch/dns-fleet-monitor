@@ -110,53 +110,35 @@ async function lookupDNSSEC(domain) {
 
 function App() {
 
- 
-  const [domains, setDomains] = useState([
-    {
+  const defaultSeedDomains = [
+  {
     id: "1",
     name: "google.com",
     checks: {
-      a: { status: "ok", values: ["108.177.14.139"] },
-      mx: { status: "ok", values: ["smtp.google.com"] },
-      spf: { status: "warning", values: ["v=spf1 include:_spf.google.com ~all"] },
-      dnssec: { status: "fail", values: [] }
+      a:      { status: "pending", values: [] },
+      mx:     { status: "pending", values: [] },
+      spf:    { status: "pending", values: [] },
+      dnssec: { status: "pending", values: [] },
     },
-    latency: 22,
+    latency: 0,
     lastChecked: Date.now(),
-  },
-  {
-    id: "2",
-    name: "nrk.no",
-    checks: {
-      a: { status: "ok", values: ["92.123.135.148"] },
-      mx: { status: "ok", values: ["smtp.google.com"] },
-      spf: {
-        status: "ok",
-        values: [
-          "v=spf1 mx a ip4:160.67.135.178 ip4:160.67.166.179 ip4:77.94.235.18 ip4:23.253.183.25 ip4:77.94.238.194 a:msg-out.onevoice.no include:spf.protection.outlook.com include:_spf.anpdm.com include:_spf.sndr.no include:_spf.google.com -all"
-        ]
-      },
-      dnssec: { status: "ok", values: [] },
-    },
-    latency: 24,
-    lastChecked: Date.now() - 15000,
-  },
-  {
-    id: "3",
-    name: "vg.no",
-    checks: {
-      a: { status: "ok", values: ["13.33.235.87"] },
-      mx: {
-        status: "ok",
-        values: ["alt1.aspmx.l.google.com", "alt3.aspmx.l.google.com"]
-      },
-      spf: { status: "ok", values: ["v=spf1 include:_u.vg.no._spf.smart.ondmarc.com ~all"] },
-      dnssec: { status: "warning", values: [] },
-    },
-    latency: 32,
-    lastChecked: Date.now() - 60000,
   }
-  ])
+]
+
+ const [domains, setDomains] = useState(() => {
+  try {
+     const saved = localStorage.getItem("domains")
+     if (saved) return JSON.parse(saved)
+  } catch (e) {
+    console.error("Failed to load domains from localStorage:", e)
+  }
+  return defaultSeedDomains
+ })
+
+ useEffect(() => {
+  localStorage.setItem("domains", JSON.stringify(domains))
+ }, [domains])
+  
 
         useEffect(() => {
           domains.forEach(domain => {
