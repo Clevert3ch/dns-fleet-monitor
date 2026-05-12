@@ -249,25 +249,29 @@ function App() {
   
   
   return (
-    <>
-    <Header 
-    domainCount={domainCount}
-    lastSync={lastSync}
-    />
-    <StatCard label="Healthy" value={healthyCount} />
-    <StatCard label="Warnings" value={warningCount} />
-    <StatCard label="Failing" value={failingCount} />
-    <StatCard label="Avg latency" value={`${Math.round(avgLatency)}ms`} />
-    <AddDomainBar
-    onAddDomain={handleAddDomain}
-    onRefreshAll={handleRefreshAll}
-    />
-    <Table 
-    domains={domains}
-    onDeleteDomain={handleDeleteDomain}
-     />
+    <div className="bg-zinc-950 text-green-400 font-mono min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
     
-    </>
+        <Header 
+        domainCount={domainCount}
+        lastSync={lastSync}
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 " >
+        <StatCard label="Healthy" value={healthyCount} />
+        <StatCard label="Warnings" value={warningCount} />
+        <StatCard label="Failing" value={failingCount} />
+        <StatCard label="Avg latency" value={`${Math.round(avgLatency)}ms`} />
+        </div>
+        <AddDomainBar
+        onAddDomain={handleAddDomain}
+        onRefreshAll={handleRefreshAll}
+        />
+        <Table 
+        domains={domains}
+        onDeleteDomain={handleDeleteDomain}
+        />
+      </div>
+    </div>
   )
   
 }
