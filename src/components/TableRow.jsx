@@ -1,20 +1,13 @@
 import ExpandedDetail from "./ExpandedDetail"
 import StatusDot from "./StatusDot"
 import {useState} from "react"
+import formatLastSync from "../utils/formatLastSync"
 
 
 export default function TableRow({domain, onDeleteDomain}) {
     const [isExpanded, setIsExpanded] = useState(false)
 
-    function formatLastSync(timestamp) {
-    const diffMs = Date.now() - timestamp
-    const seconds = Math.floor(diffMs / 1000)
-
-    if (seconds < 60) return `${seconds}s ago`
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`
-    return `${Math.floor(seconds / 86400)}d ago`
-    }
+    
     return (
         <>
         <tr onClick={() => setIsExpanded(prev => !prev)} className="border-b border-green-950 hover:bg-zinc-900 cursor-pointer">
