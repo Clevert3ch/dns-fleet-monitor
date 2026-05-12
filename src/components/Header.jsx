@@ -1,9 +1,10 @@
 import formatLastSync from "../utils/formatLastSync"
+import useNow from "../utils/useNow"
 
 
 
 export default function Header({domainCount, lastSync}) {
-    
+    const now = useNow()
 
     return (
         <header className="border-b border-green-900 pb-4 mb-6">

@@ -2,11 +2,12 @@ import ExpandedDetail from "./ExpandedDetail"
 import StatusDot from "./StatusDot"
 import {useState} from "react"
 import formatLastSync from "../utils/formatLastSync"
+import useNow from "../utils/useNow"
 
 
 export default function TableRow({domain, onDeleteDomain}) {
     const [isExpanded, setIsExpanded] = useState(false)
-
+    const now = useNow()
     
     return (
         <>
