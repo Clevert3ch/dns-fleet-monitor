@@ -4,7 +4,7 @@ A lightweight DNS monitoring dashboard for tracking the health of multiple domai
 
 **[Live demo →](https://dns-fleet-monitor.vercel.app/)**
 
-![Demo](./public/DNSFleetMonitor.gif)
+![Demo](./public/DNSfleetMonitor.gif)
 
 DNS Fleet Monitor checks A, MX, SPF, and DNSSEC records for each domain you add, measures DNS query latency, and refreshes automatically every 30 seconds. The domain list persists in localStorage so your fleet survives page reloads.
 
