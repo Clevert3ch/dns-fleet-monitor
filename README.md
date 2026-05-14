@@ -96,11 +96,11 @@ src/
 
 ## What I Learned
 
-- how to break UI into reusable components bases on actual need, if something is reused, if it handles its own logic or makes the code easier to read then it deservers its own component.
-- Data-driven UI, i worked with controlled inputs , derived values and functional state update to keep everything predictable and easier to debug.
-- Got a better understanding on the difference between rendering and sideffects, that things like API calls, timers and localStorage belongs in useEffect and clean up functions are important when working with subs or intervals.
-- created my first customhook,useNow helped keep components cleaner and made shared behaviour easier to reuse.
-- got a better understanding of Tailwinds, including responsive breakpoints, hover/focus states and writing full utility classes instead of generating them dynamically.  
+- **Component design with real criteria** — deciding what becomes a component based on whether it's reused, owns its own logic, or is complex enough that breaking it out improves readability. No more "this feels like a component" guessing.
+- **Data-driven UI** — controlled inputs, derived values computed on every render, and functional state updates (`setDomains(prev => ...)`) to keep everything predictable and safe in async code.
+- **Rendering vs. side effects** — API calls, timers, and localStorage writes belong in `useEffect`. Cleanup functions are non-negotiable when working with subscriptions or intervals — without them you get memory leaks and ghost timers.
+- **My first custom hook** — packaging `useState` + `useEffect` into `useNow` keeps consuming components clean and demonstrates that hooks aren't magic, just functions that follow naming conventions.
+- **Tailwind utility-first CSS** — responsive breakpoints, hover/focus states, and the discipline of writing full utility class names rather than constructing them dynamically (which breaks Tailwind's static analysis).
 
 ## Limitations
 
